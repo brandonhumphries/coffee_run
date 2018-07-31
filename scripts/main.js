@@ -1,5 +1,5 @@
 var runningOrderList = [];
-
+var currentI;
 var orderFormInput = document.querySelector('[data-coffee-order="form"]');
 
 var coffeeOrderInput = document.querySelector('.form-control');
@@ -9,12 +9,27 @@ var caffeineInput = document.querySelector('[name="strength"]');
 
 var pendingOrderList = document.querySelector('.pending-orders');
 
-var orderRefreshButton = document.querySelector('[class="pending-order-refresh"]');
+var retrieveStorage = localStorage.getItem('order');
+var retrievedOrder = JSON.parse(retrieveStorage);
+runningOrderList = retrievedOrder;
 
-// var addCheckbox = function (element) {
-//     var newCheckbox = document.createElement('input');
-//     newCheckbox.setAttribute('type', 'checkbox');
-// };
+var displayOrders = function (runningOrderList) {
+    runningOrderList.forEach(function (item) {
+        var retainedOrderListItem = document.createElement('p');
+        var retainedOrder = document.createElement('li');
+        var retainedOrderFormInput = {order: '', email: '', size: '', flavor: '', caffeine: ''};
+        retainedOrderFormInput.order = item.value;
+        retainedOrderFormInput.email = item.value;
+        retainedOrderFormInput.size = item.value;
+        retainedOrderFormInput.flavor = item.value;
+        retainedOrderFormInput.caffeine = item.value;
+        retainedOrderListItem.textContent = retainedOrderFormInput.size + ' ' + retainedOrderFormInput.order + ' ' + retainedOrderFormInput.flavor + ' ' + retainedOrderFormInput.caffeine + ' ' + retainedOrderFormInput.email;
+        retainedOrder.appendChild(retainedOrderListItem);
+        pendingOrderList.appendChild(retainedOrder);
+    })
+};
+
+displayOrders(runningOrderList);
 
 orderFormInput.addEventListener('submit', function (event) {
     event.preventDefault();
@@ -23,7 +38,7 @@ orderFormInput.addEventListener('submit', function (event) {
 
     // var pendingOrderFormInput = [];
     // console.log(coffeeOrderInput.value);
-    // var pendingOrderFormInput = {order: '', email: '', size: '', flavor: '', caffeine: ''};
+    var pendingOrderFormInput = {order: '', email: '', size: '', flavor: '', caffeine: ''};
 
     // var sizePending = document.createElement('span')
     // sizePending.textContent = sizeInput.value;
@@ -33,9 +48,10 @@ orderFormInput.addEventListener('submit', function (event) {
     // coffeeOrderPending.textContent = coffeeOrderInput.value;
 
     var pendingOrder = document.createElement('li');
-    var pendingOrderListItem = document.createElement('p');
-    pendingOrderListItem.textContent = pendingOrderItem;
-    pendingOrderListItem.classList.add('order-list-item');
+    pendingOrder.classList.add('order-container')
+    // var pendingOrderListItem = document.createElement('p');
+    // pendingOrderListItem.textContent = pendingOrderItem;
+    // pendingOrderListItem.classList.add('order-list-item');
 
     var newCheckbox = document.createElement('input');
     newCheckbox.setAttribute('type', 'checkbox');
@@ -47,11 +63,15 @@ orderFormInput.addEventListener('submit', function (event) {
     // pendingOrderListItem.appendChild(pendingOrderItem);
     // pendingOrderItem.appendChild(coffeeOrderPending);
     // console.log(pendingOrderFormInput.order);
-    // pendingOrderFormInput.order = coffeeOrderInput.value;
-    // pendingOrderFormInput.email = emailInput.value;
-    // pendingOrderFormInput.size = sizeInput.value;
-    // pendingOrderFormInput.flavor = flavorInput.value;
-    // pendingOrderFormInput.caffeine = caffeineInput.value;
+    pendingOrderFormInput.order = coffeeOrderInput.value;
+    pendingOrderFormInput.email = emailInput.value;
+    pendingOrderFormInput.size = sizeInput.value;
+    pendingOrderFormInput.flavor = flavorInput.value;
+    pendingOrderFormInput.caffeine = caffeineInput.value;
+
+    var pendingOrderListItem = document.createElement('p');
+    pendingOrderListItem.textContent = pendingOrderFormInput.size + ' ' + pendingOrderFormInput.order + ' ' + pendingOrderFormInput.flavor + ' ' + pendingOrderFormInput.caffeine + ' ' + pendingOrderFormInput.email;
+    pendingOrderListItem.classList.add('order-list-item');
 
     // pendingOrderList.appendChild(pendingOrderItem);
     // var coffeeOrderItem = coffeeOrderInput.value;
@@ -78,40 +98,37 @@ orderFormInput.addEventListener('submit', function (event) {
     // console.log(pendingOrderFormInput);
     // runningOrderList.push(pendingOrder)
     // console.log(runningOrderList);
-    JSON.stringify(pendingOrder);
-    
-    localStorage.setItem('order', pendingOrder);
-    orderRefreshButton.addEventListener('submit', function (event) {
-        event.preventDefault();
-        if (newCheckbox.checked === true) {
-            pendingOrderList.removeChild(pendingOrder);
-        }
-    });
+    // var pendingOrderArray = Array.from(pendingOrder);
+    // JSON.stringify(pendingOrder);
+    // localStorage.setItem('order', pendingOrderArray);
+    runningOrderList.push(pendingOrderFormInput);
+    savedOrders(runningOrderList);
 
     // var coffeeOrderInput = document.querySelector('.form-control');
     // coffeeOrderInput.textContent = 
 });
 
-// runningOrderList.forEach(function (element) {
-//     orderRefreshButton.addEventListener('submit', function (event) {
-//         event.preventDefault();
-//         // console.log('hi');
-//         var checkbox = document.querySelector('.checkbox');
-//         if (checkbox.checked === true) {
-//             console.log('hi');
-//             // console.log(checkbox.checked);
-//         }
-//     });
-// });
-// newCheckbox.addEventListener('submit', function (event) {
-//     event.preventDefault();
-//     runningOrderList.forEach(function(element) {
-//         if (element.input === checked) {
-//             console.log('works');
-//         }
-//         else {
-//             console.log('not working');
-//         }
-//     });
-// });
 
+var orderRefreshButton = document.querySelector('.pending-order-refresh')
+orderRefreshButton.addEventListener('submit', function (event) {
+    event.preventDefault();
+    var checkedItems = document.getElementsByClassName('order-list-item-container');
+    var checkedItemsArray = Array.from(checkedItems);
+    // localStorage.setItem('order', checkedItemsArray);
+    checkedItemsArray.forEach(function(item, i) {
+        if (item.childNodes[0].checked === true) {
+            item.remove();
+            currentI = i;
+            runningOrderList.splice([currentI], 1);
+            savedOrders(runningOrderList);
+        }
+    });
+});
+
+
+var savedOrders = function (item) {
+    // orders.forEach(function (item) {
+        var stringifiedItem = JSON.stringify(item);
+        localStorage.setItem('order', stringifiedItem);
+    // });
+};
