@@ -1,0 +1,10 @@
+.order-list-item {
+    display: flex;
+    list-style: none;
+    padding-left: 0.5em;  
+    padding-right: 0.5em;
+}
+
+.order-list-item-container {
+    display: flex;
+}
