@@ -6,6 +6,18 @@ var orderRefreshButton = document.querySelector('.pending-order-refresh')
 var displayOrder = function (pendingOrder) {
     pendingOrderList.appendChild(pendingOrder);
 ;}
+
+var createObject = function (orderData) {
+    var orderObject = {order: '', email: '', size: '', flavor: '', caffeine: ''};
+    orderObject.order = orderData[0];
+    orderObject.email = orderData[1];
+    orderObject.size = orderData[2];
+    orderObject.flavor = orderData[3];
+    orderObject.caffeine = orderData[4];
+    console.log(orderObject);
+    return orderObject;
+};
+
 var createCheckBox = function () {
     var newCheckbox = document.createElement('input');
     newCheckbox.setAttribute('type', 'checkbox');
@@ -34,11 +46,19 @@ var parseOrders = function () {
     runningOrderList = retrievedOrder;
     return runningOrderList;
 };
+var parseServerData = function () {
+    $.ajax('https://dc-coffeerun.herokuapp.com/api/coffeeorders', {
+        success: function(data) {
+            var retrievedData = data;
+            console.log(retrievedData);
+        }
+    })
+};
+
 var displayOrders = function (runningOrderList) {
     runningOrderList.forEach(function (item) {
-        var retainedOrder = document.createElement('li');
+        var retainedOrder = createLI();
         var retainedOrderFormInput = {order: '', email: '', size: '', flavor: '', caffeine: ''};
-        retainedOrder.classList.add('order-list-item-container');
         retainedOrderFormInput.order = item.order;
         retainedOrderFormInput.email = item.email;
         retainedOrderFormInput.size = item.size;
@@ -52,16 +72,21 @@ var displayOrders = function (runningOrderList) {
 
 parseOrders();
 
+parseServerData();
+
 displayOrders(runningOrderList);
 
 orderFormInput.addEventListener('submit', function (event) {
     event.preventDefault();
-    var sizeInput = document.querySelector('[name="size"]:checked');
     var coffeeOrderInput = document.querySelector('.form-control');
     var emailInput = document.querySelector('[name="emailAddress"]');
+    var sizeInput = document.querySelector('[name="size"]:checked');
     var flavorInput = document.querySelector('[name="flavor"]');
     var caffeineInput = document.querySelector('[name="strength"]');
-
+    var coffeeOrder = [];
+    coffeeOrder.push(coffeeOrderInput.value, emailInput.value, sizeInput.value, flavorInput.value, caffeineInput.value);
+    console.log(coffeeOrder);
+    console.log(createObject(coffeeOrder));
     var pendingOrderFormInput = {order: '', email: '', size: '', flavor: '', caffeine: ''};
 
     var pendingOrder = createLI();
