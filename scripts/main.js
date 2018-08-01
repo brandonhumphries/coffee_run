@@ -14,7 +14,6 @@ var createObject = function (orderData) {
     orderObject.size = orderData[2];
     orderObject.flavor = orderData[3];
     orderObject.strength = orderData[4];
-    // console.log(orderObject);
     return orderObject;
 };
 
