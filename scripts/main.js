@@ -19,6 +19,11 @@ var createOrderItem = function (pendingOrderFormInput) {
     pendingOrderListItem.classList.add('order-list-item');
     return pendingOrderListItem;
 };
+var createLI = function () {
+    var pendingOrderLI = document.createElement('li');
+    pendingOrderLI.classList.add('order-list-item-container');
+    return pendingOrderLI;
+};
 var savedOrders = function (item) {
     var stringifiedItem = JSON.stringify(item);
     localStorage.setItem('order', stringifiedItem);
@@ -59,15 +64,13 @@ orderFormInput.addEventListener('submit', function (event) {
 
     var pendingOrderFormInput = {order: '', email: '', size: '', flavor: '', caffeine: ''};
 
-    var pendingOrder = document.createElement('li');
+    var pendingOrder = createLI();
 
     pendingOrderFormInput.order = coffeeOrderInput.value;
     pendingOrderFormInput.email = emailInput.value;
     pendingOrderFormInput.size = sizeInput.value;
     pendingOrderFormInput.flavor = flavorInput.value;
     pendingOrderFormInput.caffeine = caffeineInput.value;
-
-    pendingOrder.classList.add('order-list-item-container');
 
     pendingOrder.appendChild(createCheckBox());
     pendingOrder.appendChild(createOrderItem(pendingOrderFormInput));
