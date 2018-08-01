@@ -9,27 +9,42 @@ var caffeineInput = document.querySelector('[name="strength"]');
 
 var pendingOrderList = document.querySelector('.pending-orders');
 
-var retrieveStorage = localStorage.getItem('order');
-var retrievedOrder = JSON.parse(retrieveStorage);
-runningOrderList = retrievedOrder;
+// var retrieveStorage = localStorage.getItem('order');
+// var retrievedOrder = JSON.parse(retrieveStorage);
+// runningOrderList = retrievedOrder;
 
-var displayOrders = function (runningOrderList) {
-    runningOrderList.forEach(function (item) {
-        var retainedOrderListItem = document.createElement('p');
-        var retainedOrder = document.createElement('li');
-        var retainedOrderFormInput = {order: '', email: '', size: '', flavor: '', caffeine: ''};
-        retainedOrderFormInput.order = item.value;
-        retainedOrderFormInput.email = item.value;
-        retainedOrderFormInput.size = item.value;
-        retainedOrderFormInput.flavor = item.value;
-        retainedOrderFormInput.caffeine = item.value;
-        retainedOrderListItem.textContent = retainedOrderFormInput.size + ' ' + retainedOrderFormInput.order + ' ' + retainedOrderFormInput.flavor + ' ' + retainedOrderFormInput.caffeine + ' ' + retainedOrderFormInput.email;
-        retainedOrder.appendChild(retainedOrderListItem);
-        pendingOrderList.appendChild(retainedOrder);
-    })
+// var displayOrders = function (runningOrderList) {
+//     runningOrderList.forEach(function (item) {
+//         var retainedOrderListItem = document.createElement('p');
+//         var retainedOrder = document.createElement('li');
+//         var retainedOrderFormInput = {order: '', email: '', size: '', flavor: '', caffeine: ''};
+//         retainedOrderFormInput.order = item.value;
+//         retainedOrderFormInput.email = item.value;
+//         retainedOrderFormInput.size = item.value;
+//         retainedOrderFormInput.flavor = item.value;
+//         retainedOrderFormInput.caffeine = item.value;
+//         retainedOrderListItem.textContent = retainedOrderFormInput.size + ' ' + retainedOrderFormInput.order + ' ' + retainedOrderFormInput.flavor + ' ' + retainedOrderFormInput.caffeine + ' ' + retainedOrderFormInput.email;
+//         retainedOrder.appendChild(retainedOrderListItem);
+//         pendingOrderList.appendChild(retainedOrder);
+//     })
+// };
+
+// displayOrders(runningOrderList);
+
+var createCheckBox = function () {
+    var newCheckbox = document.createElement('input');
+    newCheckbox.setAttribute('type', 'checkbox');
+    newCheckbox.classList.add('order-list-item');
+    newCheckbox.classList.add('checkbox');
+    return newCheckbox;
 };
 
-displayOrders(runningOrderList);
+var createOrderItem = function (pendingOrderFormInput) {
+    var pendingOrderListItem = document.createElement('p');
+    pendingOrderListItem.textContent = pendingOrderFormInput.size + ' ' + pendingOrderFormInput.order + ' ' + pendingOrderFormInput.flavor + ' ' + pendingOrderFormInput.caffeine + ' ' + pendingOrderFormInput.email;
+    pendingOrderListItem.classList.add('order-list-item');
+    return pendingOrderListItem;
+};
 
 orderFormInput.addEventListener('submit', function (event) {
     event.preventDefault();
@@ -53,10 +68,10 @@ orderFormInput.addEventListener('submit', function (event) {
     // pendingOrderListItem.textContent = pendingOrderItem;
     // pendingOrderListItem.classList.add('order-list-item');
 
-    var newCheckbox = document.createElement('input');
-    newCheckbox.setAttribute('type', 'checkbox');
-    newCheckbox.classList.add('order-list-item');
-    newCheckbox.classList.add('checkbox');
+    // var newCheckbox = document.createElement('input');
+    // newCheckbox.setAttribute('type', 'checkbox');
+    // newCheckbox.classList.add('order-list-item');
+    // newCheckbox.classList.add('checkbox');
     
    
 
@@ -69,9 +84,9 @@ orderFormInput.addEventListener('submit', function (event) {
     pendingOrderFormInput.flavor = flavorInput.value;
     pendingOrderFormInput.caffeine = caffeineInput.value;
 
-    var pendingOrderListItem = document.createElement('p');
-    pendingOrderListItem.textContent = pendingOrderFormInput.size + ' ' + pendingOrderFormInput.order + ' ' + pendingOrderFormInput.flavor + ' ' + pendingOrderFormInput.caffeine + ' ' + pendingOrderFormInput.email;
-    pendingOrderListItem.classList.add('order-list-item');
+    // var pendingOrderListItem = document.createElement('p');
+    // pendingOrderListItem.textContent = pendingOrderFormInput.size + ' ' + pendingOrderFormInput.order + ' ' + pendingOrderFormInput.flavor + ' ' + pendingOrderFormInput.caffeine + ' ' + pendingOrderFormInput.email;
+    // pendingOrderListItem.classList.add('order-list-item');
 
     // pendingOrderList.appendChild(pendingOrderItem);
     // var coffeeOrderItem = coffeeOrderInput.value;
@@ -88,8 +103,8 @@ orderFormInput.addEventListener('submit', function (event) {
     // console.log(pendingOrderFormInput.caffeine);
     pendingOrder.classList.add('order-list-item-container');
 
-    pendingOrder.appendChild(newCheckbox);
-    pendingOrder.appendChild(pendingOrderListItem);
+    pendingOrder.appendChild(createCheckBox());
+    pendingOrder.appendChild(createOrderItem(pendingOrderFormInput));
     pendingOrderList.appendChild(pendingOrder);
 
     // pendingOrderList.forEach(element(addCheckbox));
@@ -112,23 +127,36 @@ orderFormInput.addEventListener('submit', function (event) {
 var orderRefreshButton = document.querySelector('.pending-order-refresh')
 orderRefreshButton.addEventListener('submit', function (event) {
     event.preventDefault();
-    var checkedItems = document.getElementsByClassName('order-list-item-container');
+    var checkedItems = document.querySelectorAll('.order-list-item-container');
     var checkedItemsArray = Array.from(checkedItems);
-    // localStorage.setItem('order', checkedItemsArray);
+    var newCurrentOrders = [];
     checkedItemsArray.forEach(function(item, i) {
-        if (item.childNodes[0].checked === true) {
+        if (item.querySelector('.checkbox').checked) {
             item.remove();
-            currentI = i;
-            runningOrderList.splice([currentI], 1);
-            savedOrders(runningOrderList);
+        }
+        else {
+            newCurrentOrders.push(runningOrderList[i]);
         }
     });
+    runningOrderList = newCurrentOrders;
+    savedOrders(runningOrderList);
 });
 
 
 var savedOrders = function (item) {
-    // orders.forEach(function (item) {
         var stringifiedItem = JSON.stringify(item);
         localStorage.setItem('order', stringifiedItem);
-    // });
 };
+
+
+var parseOrders = function () {
+    var retrievedOrders = localStorage.getItem('order');
+    var parsedItem = JSON.parse(retrievedOrders);
+    console.log(parsedItem);
+    // runningOrderList = parsedItem;
+    console.log(runningOrderList);
+};
+
+parseOrders();
+
+
