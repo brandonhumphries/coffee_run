@@ -28,6 +28,7 @@ var createOrderItem = function (pendingOrderFormInput) {
     var pendingOrderListItem = document.createElement('p');
     pendingOrderListItem.textContent = pendingOrderFormInput.size + ' ' + pendingOrderFormInput.coffee + ' ' + pendingOrderFormInput.flavor + ' ' + pendingOrderFormInput.strength + ' ' + pendingOrderFormInput.emailAddress;
     pendingOrderListItem.classList.add('order-list-item');
+    pendingOrderListItem.classList.add('order-item')
     return pendingOrderListItem;
 };
 var createLI = function () {
@@ -94,6 +95,14 @@ var displayOrders = function (runningOrderList) {
     })
 };
 
+var removeServerOrder = function (email) {
+    $.ajax('https://dc-coffeerun.herokuapp.com/api/coffeeorders/' + email, {
+        method: 'DELETE'
+    })
+    console.log('https://dc-coffeerun.herokuapp.com/api/coffeeorders/' + email);
+    console.log(email);
+};
+
 // parseOrders();
 
 retrieveServerData();
@@ -137,6 +146,7 @@ orderRefreshButton.addEventListener('submit', function (event) {
     checkedItemsArray.forEach(function(item, i) {
         if (item.querySelector('.checkbox').checked) {
             item.remove();
+            removeServerOrder(runningOrderList[i].emailAddress);
         }
         else {
             newCurrentOrders.push(runningOrderList[i]);
